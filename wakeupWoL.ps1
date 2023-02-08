@@ -1,25 +1,34 @@
-#################
-#  Wake on Lan  #
-#  Paul Gleason #
-#    Wake Up    #
-#################
+##################
+#     Wake Up    #
+#  Paul Gleason  #
+#Work in Progress#
+##################
 
-param ([switch] $help, [validateset ("F202", "I117", "J310")] [string] $lab)
+<#
+Description: This script is made to call the Invoke-WakeOnLan to wake all machines on specified location csv files.
+#>
+
+param (
+    # `.\wakeupWoL.ps1 -help` will call the help output
+    [switch] $help, 
+    # `.\wakeupWoL.ps1 -location <location_name>` will call use that locations csv file
+    [validateset ("F202", "<location_name>", "<location_name>")] [string] $location)
 
 if ($help)
 {
     Write-Host " 
-    --- wakeup.ps1 help commands ---
+    --- wakeupWoL.ps1 help commands ---
 
     -help : shows help commands
-    -lab <lab> : select lab file default is mac.csv
-        ex: wakeupWoL.ps1 -lab F202
+    -location <location_name> : select location file default is mac.csv
+        ex: wakeupWoL.ps1 -location F202
     "
 }
 else
 {
 
     # wake up function
+    # Function from: https://powershell.one/code/11.html
     function Invoke-WakeOnLan{
     param
     (
@@ -70,32 +79,42 @@ else
             $null = $UDPclient.Send($packet, $packet.Length)
             Write-Verbose "sent magic packet to $currentMacAddress..."
         }
-        catch{
-            Write-Warning "Unable to send ${mac}: $_"
-        }
+            catch{
+                Write-Warning "Unable to send ${mac}: $_"
+            }
         }
     }
-    end{
-        # release the UDF client and free its memory:
-        $UDPclient.Close()
-        $UDPclient.Dispose()
-    }
+        end{
+            # release the UDF client and free its memory:
+            $UDPclient.Close()
+            $UDPclient.Dispose()
+        }
     }
 
-    switch($lab){
-        'I117' {$data = Import-csv "I117.csv"}
-        'J310' {$data = Import-csv "J310.csv"}
-        'F202' {$data = Import-csv "F202.csv"}
+    # Location switch statement
+    switch($location){
+        # 'template' {
+        #     $data = Import-csv ".\template.csv"
+        #  }
+        # 'template_network' {
+        #     $data = Import-csv "\\<server>\<share>.csv"
+        # }
 
-        Default{
+        # For debugging/One time use
+        'SETUP' {
             $data = Import-csv "mac.csv"
-            # Write-Host "Bad lab name..."
+        }
+        # Fallback for no location selected
+        Default{
+            Write-Host "Bad location name..."
+            Break
         }
     
     }
-    # $data = Import-csv "\\trex2021\Application Sources\Utilities\Wake On Lan\mac.csv"
 
+    # foreach Mac Address in the csv files
     foreach ($macaddresses in $data.MacAddress){
+        # Call each Mac Address to wake up
         Invoke-WakeOnLan -MacAddress $macaddresses -Verbose
     }
 
