@@ -12,7 +12,7 @@ param (
     # `.\enableWoL.ps1 -help` will call the help output
     [switch] $help, 
     # `.\enableWoL.ps1 -location <location_name>` will call use that locations csv file
-    [validateset ("F202", "<location_name>", "<location_name>")] [string] $location)
+    [validateset ("SETUP", "F202", "<location_name>", "<location_name>")] [string] $location)
 
 if ($help)
 {
