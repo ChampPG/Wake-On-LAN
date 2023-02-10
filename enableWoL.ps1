@@ -27,6 +27,7 @@ if ($help)
 }
 else
 {
+    $global:nic = Get-NetAdapter | Where-Object {($_.MediaConnectionState -eq "Connected") -and (($_.name -match "Ethernet") -or ($_.name -match "local area connection"))}
     function Set-WakeEnabled{
         # Just if statement from: https://vanbrenk.blogspot.com/2021/02/enable-wake-on-lan-with-powershell-and.html
         If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {            
@@ -34,7 +35,7 @@ else
             Break            
         }         
         
-        $nic = Get-NetAdapter | Where-Object {($_.MediaConnectionState -eq "Connected") -and (($_.name -match "Ethernet") -or ($_.name -match "local area connection"))}
+        # $nic = Get-NetAdapter | Where-Object {($_.MediaConnectionState -eq "Connected") -and (($_.name -match "Ethernet") -or ($_.name -match "local area connection"))}
         $nicPowerWake = Get-WmiObject MSPower_DeviceWakeEnable -Namespace root\wmi | Where-Object {$_.instancename -match [regex]::escape($nic.PNPDeviceID) }
         
         If ($nicPowerWake.Enable -eq $true){
@@ -78,7 +79,7 @@ else
     Set-WakeEnabled
 
     # Get Adapter
-    $nic = Get-NetAdapter | Where-Object {($_.MediaConnectionState -eq "Connected") -and (($_.name -match "Ethernet") -or ($_.name -match "local area connection"))}
+    # $nic = Get-NetAdapter | Where-Object {($_.MediaConnectionState -eq "Connected") -and (($_.name -match "Ethernet") -or ($_.name -match "local area connection"))}
     # Get Mac Address in raw form
     $temphostmac = (($nic | Select-Object MacAddress | Format-Wide | Out-String).split("`n") -match '\S').Trim() -replace "`0", ""
     # Format Mac Address from XX-XX-XX-XX-XX-XX to XX:XX:XX:XX:XX:XX
