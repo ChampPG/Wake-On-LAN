@@ -93,18 +93,21 @@ else
     # Location switch statement
     switch($location){
         # 'template' {
-        #     $data = Import-csv ".\template.csv"
-        #     $path = ".\template.csv"
+        #     $file = ".\template.csv"
+        #     $data = Import-csv $file
+        #     $path = $file
         #  }
         # 'template_network' {
-        #     $data = Import-csv "\\<server>\<share>.csv"
-        #     $path = "\\<server>\<share>.csv"
+        #     $file = "\\<server>\<share>.csv"
+        #     $data = Import-csv  $file
+        #     $path = $file
         # }
         
         # For debugging/One time use
         'SETUP' {
-            $data = Import-csv ".\mac.csv"
-            $path = ".\mac.csv"
+            $file = ".\mac.csv"
+            $data = Import-csv $file
+            $path = $file
         }
         # Fallback for no location selected
         Default{
